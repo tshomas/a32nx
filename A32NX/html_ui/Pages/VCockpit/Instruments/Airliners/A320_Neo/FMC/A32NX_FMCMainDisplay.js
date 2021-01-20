@@ -1666,6 +1666,9 @@ class FMCMainDisplay extends BaseAirliners {
     }
 
     insertWaypoint(newWaypointTo, index, callback = EmptyCallback.Boolean) {
+        if (newWaypointTo === "" || newWaypointTo === FMCMainDisplay.clrValue) {
+            return callback(false);
+        }
         this.ensureCurrentFlightPlanIsTemporary(async () => {
             this.getOrSelectWaypointByIdent(newWaypointTo, (waypoint) => {
                 if (!waypoint) {
@@ -1774,6 +1777,31 @@ class FMCMainDisplay extends BaseAirliners {
     removeWaypoint(index, callback = EmptyCallback.Void) {
         this.ensureCurrentFlightPlanIsTemporary(() => {
             this.flightPlanManager.removeWaypoint(index, true, callback);
+        });
+    }
+
+    clearDiscontinuity(index, callback = EmptyCallback.Void) {
+        this.ensureCurrentFlightPlanIsTemporary(() => {
+            this.flightPlanManager.clearDiscontinuity(index);
+            callback();
+        });
+    }
+
+    setDestinationAfterWaypoint(icao, index, callback = EmptyCallback.Boolean) {
+        this.dataManager.GetAirportByIdent(icao).then((airportTo) => {
+            if (airportTo) {
+                this.ensureCurrentFlightPlanIsTemporary(() => {
+                    this.flightPlanManager.truncateWaypoints(index);
+                    // add the new destination, which will insert a discontinuity
+                    this.flightPlanManager.setDestination(airportTo.icao, () => {
+                        this.tmpOrigin = airportTo.ident;
+                        callback(true);
+                    });
+                });
+            } else {
+                this.addNewMessage(NXSystemMessages.notInDatabase);
+                callback(false);
+            }
         });
     }
 
