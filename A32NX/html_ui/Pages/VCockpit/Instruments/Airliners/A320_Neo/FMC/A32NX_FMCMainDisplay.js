@@ -1713,6 +1713,9 @@ class FMCMainDisplay extends BaseAirliners {
     }
 
     insertWaypoint(newWaypointTo, index, callback = EmptyCallback.Boolean) {
+        if (newWaypointTo === "" || newWaypointTo === FMCMainDisplay.clrValue) {
+            return callback(false);
+        }
         this.ensureCurrentFlightPlanIsTemporary(async () => {
             this.getOrSelectWaypointByIdent(newWaypointTo, (waypoint) => {
                 if (!waypoint) {
