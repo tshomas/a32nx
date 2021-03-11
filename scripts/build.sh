@@ -29,7 +29,7 @@ build_manifests() {
 
 build_systems() {
     cargo build --target wasm32-wasi --release
-    cp target/wasm32-wasi/release/systems.wasm flybywire-aircraft-a320-neo/SimObjects/AirPlanes/Asobo_A320_NEO/panel/
+    cp target/wasm32-wasi/release/systems.wasm flybywire-aircraft-a320-neo/SimObjects/AirPlanes/FlyByWire_A320_NEO/panel/
 }
 
 build_metadata() {
